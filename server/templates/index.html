@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rubik's Cube Solver</title>
+    <style>
+        video { width: 320px; height: 240px; }
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Rubik's Cube Solver</h1>
+    <p>Use your phone camera to capture each face of the cube in the order
+    <strong>Up, Right, Front, Down, Left, Back</strong>. Good lighting helps the
+    color detector.</p>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas" width="320" height="240"></canvas>
+    <div>
+        <button id="capture">Capture Face</button>
+        <button id="solve" disabled>Solve Cube</button>
+    </div>
+    <ul id="faces"></ul>
+    <pre id="output"></pre>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const facesList = document.getElementById('faces');
+        const output = document.getElementById('output');
+        const captureBtn = document.getElementById('capture');
+        const solveBtn = document.getElementById('solve');
+        const faces = [];
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            });
+
+        captureBtn.onclick = () => {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            faces.push(canvas.toDataURL('image/png'));
+            const li = document.createElement('li');
+            li.textContent = 'Face ' + faces.length + ' captured';
+            facesList.appendChild(li);
+            if (faces.length === 6) {
+                solveBtn.disabled = false;
+                captureBtn.disabled = true;
+            }
+        };
+
+        solveBtn.onclick = () => {
+            fetch('/solve', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ images: faces })
+            })
+            .then(res => res.json())
+            .then(data => {
+                output.textContent = data.solution || data.error;
+            });
+        };
+    </script>
+</body>
+</html>
