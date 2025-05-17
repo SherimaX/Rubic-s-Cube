@@ -9,6 +9,7 @@ except ImportError:  # handle if not installed
 
 app = Flask(__name__)
 
+
 # Simple color-based cube state detection
 
 def detect_cube_state(images):
@@ -61,12 +62,20 @@ def detect_cube_state(images):
 
     return cube
 
+=======
+# Placeholder for cube state detection
+def detect_cube_state(images):
+    """Detect cube state from list of base64 image strings.
+    This is a simplified placeholder that should be replaced
+    with a real computer vision algorithm.
+    """
+    # TODO: implement real color detection
+    # For now just return a solved state as an example
+    return 'UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLBBBBBBBBB'
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 
+=======
 @app.route('/solve', methods=['POST'])
 def solve():
     data = request.get_json(force=True)
@@ -82,7 +91,6 @@ def solve():
     else:
         solution = 'kociemba not installed'
     return jsonify({'solution': solution})
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
